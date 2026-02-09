@@ -1,4 +1,4 @@
-name: NJADI AI REPAIR BUILD
+name: NJADI AI FINAL APK FETCH
 on: [push, workflow_dispatch]
 
 jobs:
@@ -8,8 +8,39 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Check Files Location
-        run: ls -R # هذا الأمر سيخبرنا أين تختبئ ملفاتك بالضبط
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Gradle
+        run: |
+          find . -name gradlew -exec chmod +x {} \;
+          # البحث عن ملف gradlew وتشغيل البناء أينما كان
+          gradle_file=$(find . -name gradlew | head -n 1)
+          if [ -z "$gradle_file" ]; then
+            echo "Gradlew not found, trying default build..."
+            gradle assembleDebug
+          else
+            $gradle_file assembleDebug
+          fi
+
+      - name: Upload All Found APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: NJADI-AI-THE-REAL-APK
+          # هذا السطر سيبحث في كل المجلدات ويجلب أي ملف apk يجده
+          path: "**/*.apk"
+name: NJADI AI FINAL APK FETCH
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -17,19 +48,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build APK
+      - name: Build with Gradle
         run: |
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-            ./gradlew assembleDebug
+          find . -name gradlew -exec chmod +x {} \;
+          # البحث عن ملف gradlew وتشغيل البناء أينما كان
+          gradle_file=$(find . -name gradlew | head -n 1)
+          if [ -z "$gradle_file" ]; then
+            echo "Gradlew not found, trying default build..."
+            gradle assembleDebug
           else
-            echo "Error: Gradlew not found in root. Checking subdirectories..."
-            find . -name gradlew -exec chmod +x {} \;
-            find . -name gradlew -exec {} assembleDebug \;
+            $gradle_file assembleDebug
           fi
 
-      - name: Upload APK
+      - name: Upload All Found APKs
         uses: actions/upload-artifact@v4
         with:
-          name: NJADI-AI-SUCCESS-APK
-          path: "**/build/outputs/apk/debug/*.apk"
+          name: NJADI-AI-THE-REAL-APK
+          # هذا السطر سيبحث في كل المجلدات ويجلب أي ملف apk يجده
+          path: "**/*.apk"
