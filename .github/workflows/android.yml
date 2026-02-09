@@ -1,32 +1,30 @@
-name: NJADI-AI-FINAL-FIX
+name: NJADI-AI-COMPLETE-BUILD
 on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build with Gradle
+          node-version: 20
+      
+      - name: Install & Sync (أكواد الصورة)
         run: |
-          find . -name gradlew -exec chmod +x {} \;
-          gradle_file=$(find . -name gradlew | head -n 1)
-          if [ -z "$gradle_file" ]; then
-            echo "No gradlew found, trying direct gradle build..."
-            gradle assembleDebug
-          else
-            $gradle_file assembleDebug
-          fi
+          npm install
+          npm run build
+          # هنا وضعنا أكواد قوقل اللي شفتها في الصورة
+          npx cap sync android 
 
-      - name: Upload All Found APKs
+      - name: Final Construction
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: NJADI-AI-SUCCESS-APK
-          path: "**/*.apk"
+          name: NJADI-AI-REAL-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
