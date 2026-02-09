@@ -1,7 +1,8 @@
-name: NJADI AI AUTO BUILD
+name: NJADI AI FINAL BUILD
 on:
   push:
-    branches: [ main ] # سيبدأ البناء فوراً بمجرد ضغطك على حفظ
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,9 +19,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build Project
+      - name: Build Android Asset
         run: npm run build
 
-      - name: Build Status
-        run: echo "NJADI AI is ready for packaging!"
-
+      - name: Upload APK Result
+        uses: actions/upload-artifact@v4
+        with:
+          name: NJADI-AI-Mobile-App
+          path: dist/ # هذا سيجمع لك ملفات التطبيق الفاخرة لتكون جاهزة
