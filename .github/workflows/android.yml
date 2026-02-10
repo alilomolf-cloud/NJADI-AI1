@@ -27,12 +27,16 @@ jobs:
         run: npm run build
 
       - name: Verify Build Output
-        run: ls -d dist || (echo "خطأ: مجلد dist غير موجود!" && exit 1)
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not found!"
+            exit 1
+          fi
 
       - name: Initialize Android Platform
         run: |
           if [ ! -d "android" ]; then
-            echo "جاري إنشاء مجلد الأندرويد آلياً..."
+            echo "Creating Android folder..."
             npx cap add android
           fi
 
