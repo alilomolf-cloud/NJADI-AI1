@@ -38,11 +38,12 @@ jobs:
         run: |
           if [ ! -d "android" ]; then
             echo "Creating Android folder..."
-            npx cap add android
+            # نستخدم الاسم الكامل capacitor بدلاً من cap
+            npx capacitor add android
           fi
 
       - name: Capacitor Sync
-        run: npx cap sync android
+        run: npx capacitor sync android
 
       - name: Build Final APK
         run: |
@@ -55,3 +56,4 @@ jobs:
         with:
           name: NJADI-AI-Official-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
